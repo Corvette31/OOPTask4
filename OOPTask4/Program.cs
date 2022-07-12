@@ -8,57 +8,23 @@ namespace OOPTask4
         static void Main(string[] args)
         {
             Player player = new Player();
-            DeckOfCards cards = new DeckOfCards();
 
             Console.WriteLine("Если вы хотите брать по одной карте? (Y\\N)");
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.Y:
-                    TakeOneCard(player, cards);
+                    player.TakeOneCard();
                     break;
                 case ConsoleKey.N:
-                    TakeSomeCards(player, cards);
+                    player.TakeSomeCards();
                     break;
                 default:
-                    Console.WriteLine("\nНе могу понять что вы хотите...");
+                    Console.WriteLine("Не могу понять что вы хотите...");
                     return;
             }
 
             Console.WriteLine("Ваши карты");
             player.ShowCards();
-        }
-
-        static void TakeSomeCards(Player player, DeckOfCards cards)
-        {
-            int cardsCount;
-
-            Console.Write("\nСколько карт вы хотите взять? : ");
-
-            if (int.TryParse(Console.ReadLine(), out cardsCount) == false)
-            {
-                Console.WriteLine("\nНе корректное значение!");
-                return;
-            }
-
-            if (cardsCount > cards._cards.Count)
-            {
-                Console.WriteLine("Нет столько карт!");
-            }
-
-            for (int i = 0; i < cardsCount; i++)
-            {
-                player.TakeCard(cards);
-            }
-        }
-
-        static void TakeOneCard(Player player, DeckOfCards cards)
-        {
-            Console.WriteLine("\nНажмите любую клавишу что бы взять карту, Escape что бы выйти");
-
-            while (Console.ReadKey().Key != ConsoleKey.Escape)
-            {
-                player.TakeCard(cards);                
-            }
         }
     }
 
@@ -81,10 +47,11 @@ namespace OOPTask4
 
     class DeckOfCards
     {
-        public List<Card> _cards { get; private set; }
+        private List<Card> _cards;
         private string[] _suits = { "Бубы", "Черви", "Трефы", "Пики" };
         private string[] _titles = { "6", "7", "8", "9", "10", "Валет", "Дама", "Король", "Туз" };
-        Random random;
+        private Random random;
+
         public DeckOfCards()
         {
             _cards = new List<Card>();
@@ -107,37 +74,78 @@ namespace OOPTask4
             _cards.Remove(card);
             return card;
         }
+
+        public int GetCountCard()
+        {
+            return _cards.Count;
+        }
     }
 
     class Player
     {
-        protected List<Card> _playerCards;
+        private List<Card> _cards;
+        private DeckOfCards _deckOfCards;
 
         public Player()
         {
-            _playerCards = new List<Card>();
-        }
-
-        public void TakeCard(DeckOfCards cards)
-        {
-            var card = cards.WithdrawCard();
-
-            if (card != null)
-            {
-                _playerCards.Add(card);
-                Console.WriteLine("\nКарта взята");
-            }
-            else
-            {
-                Console.WriteLine("\nКарт больше нет");
-            }
+            _cards = new List<Card>();
+            _deckOfCards = new DeckOfCards();
         }
 
         public void ShowCards()
         {
-            foreach (var card in _playerCards)
+            foreach (var card in _cards)
             {
                 card.ShowInfo();
+            }
+        }
+
+        public void TakeOneCard()
+        {
+            Console.WriteLine("Нажмите любую клавишу что бы взять карту, Escape что бы выйти");
+
+            while (Console.ReadKey().Key != ConsoleKey.Escape)
+            {
+                TakeCard();
+            }
+        }
+
+        public void TakeSomeCards()
+        {
+            int cardsCount;
+
+            Console.Write("\nСколько карт вы хотите взять? : ");
+
+            if (int.TryParse(Console.ReadLine(), out cardsCount) == false)
+            {
+                Console.WriteLine("\nНе корректное значение!");
+                return;
+            }
+
+            if (cardsCount > _deckOfCards.GetCountCard())
+            {
+                Console.WriteLine("Нет столько карт!");
+                return;
+            }
+
+            for (int i = 0; i < cardsCount; i++)
+            {
+                TakeCard();
+            }
+        }
+
+        private void TakeCard()
+        {
+            var card = _deckOfCards.WithdrawCard();
+
+            if (card != null)
+            {
+                _cards.Add(card);
+                Console.WriteLine("Карта взята");
+            }
+            else
+            {
+                Console.WriteLine("Карт больше нет");
             }
         }
     }
