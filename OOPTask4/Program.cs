@@ -8,15 +8,16 @@ namespace OOPTask4
         static void Main(string[] args)
         {
             Player player = new Player();
+            DeckOfCards deckOfCards = new DeckOfCards();
 
             Console.WriteLine("Если вы хотите брать по одной карте? (Y\\N)");
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.Y:
-                    player.TakeOneCard();
+                    player.TakeOneCard(deckOfCards);
                     break;
                 case ConsoleKey.N:
-                    player.TakeSomeCards();
+                    player.TakeSomeCards(deckOfCards);
                     break;
                 default:
                     Console.WriteLine("Не могу понять что вы хотите...");
@@ -50,12 +51,12 @@ namespace OOPTask4
         private List<Card> _cards;
         private string[] _suits = { "Бубы", "Черви", "Трефы", "Пики" };
         private string[] _titles = { "6", "7", "8", "9", "10", "Валет", "Дама", "Король", "Туз" };
-        private Random random;
+        private Random _random;
 
         public DeckOfCards()
         {
             _cards = new List<Card>();
-            random = new Random();
+            _random = new Random();
 
             for (int i = 0; i < _suits.Length; i++)
             {
@@ -70,7 +71,7 @@ namespace OOPTask4
         {
             if (_cards.Count == 0) return null;
 
-            Card card = _cards[random.Next(_cards.Count)];
+            Card card = _cards[_random.Next(_cards.Count)];
             _cards.Remove(card);
             return card;
         }
@@ -84,12 +85,10 @@ namespace OOPTask4
     class Player
     {
         private List<Card> _cards;
-        private DeckOfCards _deckOfCards;
 
         public Player()
         {
             _cards = new List<Card>();
-            _deckOfCards = new DeckOfCards();
         }
 
         public void ShowCards()
@@ -100,17 +99,17 @@ namespace OOPTask4
             }
         }
 
-        public void TakeOneCard()
+        public void TakeOneCard(DeckOfCards deckOfCards)
         {
             Console.WriteLine("Нажмите любую клавишу что бы взять карту, Escape что бы выйти");
 
             while (Console.ReadKey().Key != ConsoleKey.Escape)
             {
-                TakeCard();
+                TakeCard(deckOfCards);
             }
         }
 
-        public void TakeSomeCards()
+        public void TakeSomeCards(DeckOfCards deckOfCards)
         {
             int cardsCount;
 
@@ -122,7 +121,7 @@ namespace OOPTask4
                 return;
             }
 
-            if (cardsCount > _deckOfCards.GetCountCard())
+            if (cardsCount > deckOfCards.GetCountCard())
             {
                 Console.WriteLine("Нет столько карт!");
                 return;
@@ -130,13 +129,13 @@ namespace OOPTask4
 
             for (int i = 0; i < cardsCount; i++)
             {
-                TakeCard();
+                TakeCard(deckOfCards);
             }
         }
 
-        private void TakeCard()
+        private void TakeCard(DeckOfCards deckOfCards)
         {
-            var card = _deckOfCards.WithdrawCard();
+            var card = deckOfCards.WithdrawCard();
 
             if (card != null)
             {
